@@ -5,9 +5,9 @@ inventario = []
 def mostrar_menu():
     print("\n--- Menú Principal ---")
     print("1. Agregar Producto")
+    print("2. Ver Inventario")
     print("3. Buscar Producto")
     print("4. Salir")
-    print("5. HolaMundo")
 
 def agregar_producto():
     print("\n--- Agregar Producto ---")
