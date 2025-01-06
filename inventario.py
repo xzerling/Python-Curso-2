@@ -44,8 +44,7 @@ Fecha de registro
 Comentarios.
 
 LISTAR: La opción de listar deberá mostrar en pantalla los datos de todos los productos registrados. 
-Esta información deberá mostrarse de forma ordenada por categoría (ej., lácteos, cereales, 
-farmacia, etc.)
+Esta información deberá mostrarse de forma ordenada por categoría (ej., regalo 1, regalo2, etc.)
 
 BUSCAR: La opción de buscar producto solicitará al usuario el ID del producto y una vez localizado deberá 
 mostrar la información de dicho producto.
