@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+"""
+"""
 """
 ******************************************************************************
 *       U N I V E R S I D A D   A U T O N O M A   D E   C H I L E            *
@@ -112,10 +115,10 @@ def menuEditar():
     print()
     print("***  Menu edición  ***")
     print("1. Editar nombre")
-    print("3. Editar precio")
-    print("4. Editar cantidad")
-    print("5. Editar stock")
-    print("6. Editar todo")
+    print("2. Editar precio")
+    print("3. Editar stock")
+    print("4. Editar venta")
+    print("5. Editar todo")
     print()
 
 
@@ -132,26 +135,48 @@ def agregarProducto():
     print()
     print("***  Agregar Producto  ***")
     while True: 
-        codigo = inputNumero("Código del producto: ")
+        # Verificar que el código sea numérico y único
+        codigo = inputNumero("Código del producto (numérico): ")
         if codigo in ids:
-            print("el codigo ya existe, escribe otro")
-        else:
-            nombre = input("Nombre del producto: ")
-            precio = inputNumero("Precio del producto: ")
-            cantidad = inputNumero("Cantidad de producto: ")
-            nVentas = inputNumero("Número de ventas del producto: ")
+            print("El código ya existe, por favor ingrese otro.")
+            continue
+        
+        # Verificar que el nombre no esté vacío y sea único
+        while True:
+            nombre = input("Nombre del producto: ").strip().upper()
+            if not nombre:
+                print("El nombre del producto no puede estar vacío.")
+                continue
 
-            producto = {
-                "nombre": nombre,
-                "codigo": codigo,
-                "precio": precio,
-                "cantidad": cantidad,
-                "nVentas": nVentas
-            }
-            inventario.append(producto)
-            ids.append(codigo)
+            nombres_existentes = [producto['nombre'] for producto in inventario]
+            if nombre in nombres_existentes:
+                print("El nombre del producto ya existe, favor ingresar otro.")
+                continue
             break
-            
+        
+        # Verificar que el precio sea numérico
+        precio = inputNumero("Precio del producto (numérico): ")
+
+        # Verificar que la cantidad sea numérica
+        cantidad = inputNumero("Cantidad del producto (numérico): ")
+
+        # Verificar que el número de ventas sea numérico
+        nVentas = inputNumero("Número de ventas del producto (numérico): ")
+
+        # Crear el producto y agregarlo al inventario
+        producto = {
+            "nombre": nombre,
+            "codigo": codigo,
+            "precio": precio,
+            "cantidad": cantidad,
+            "nVentas": nVentas
+         
+        }
+        inventario.append(producto)
+        ids.append(codigo)
+        print(f"\nProducto '{nombre}' agregado correctamente.")
+        print("----------------")
+        break
     print("----------------")
 
 def editarProducto():
@@ -175,7 +200,7 @@ def editarProducto():
             precio = inputNumero("Precio del producto: ")
             paraEditar["precio"] = precio
         elif(opcion == 3):
-            cantidad = inputNumero("Cantidad de producto: ")
+            cantidad = inputNumero("Stock de producto: ")
             paraEditar["cantidad"] = cantidad
         elif(opcion == 4):
             nVentas = inputNumero("Número de ventas del producto: ")
@@ -199,69 +224,138 @@ def editarProducto():
 def eliminarProducto():
     print()
     print("***  Eliminar Producto  ***")
-    if len(inventario) != 0:
-        print("Elige el N° de producto que se va a eliminar")
-        listarProductos()
-        indice = inputNumero("Seleccionar numero: ")
-        indice = int(indice)
-        if(indice >= len(inventario)):
-            eliminado = inventario.pop(indice+1)
-            print("Producto eliminado: ")
-            print("Nombre: ", eliminado["nombre"])    
-            print("Codigo: ", eliminado["codigo"])
-        else:
-            print()
-    else:
+    if len(inventario) == 0:
         print("No hay productos en el inventario.")
-    print("----------------")
+    else:
+        listarProductos()  # Mostrar productos disponibles para eliminar
+        codigo = inputNumero("Ingrese el código del producto que desea eliminar: ")
+        
+        if codigo in ids:
+            for producto in inventario:
+                if producto["codigo"] == codigo:
+                    inventario.remove(producto)
+                    ids.remove(codigo)
+                    print(f"\nProducto eliminado con éxito:")
+                    print(f"Nombre: {producto['nombre']}")
+                    print(f"Código: {producto['codigo']}")
+                    print("----------------")
+                    break
+                else:
+                    print("No hay productos en el inventario.")
+        print("----------------")
 
 def buscarProducto():
     print("\n***   Buscar Producto  ***")
-    codigo = inputNumero("Ingrese código del producto: ")
-    if(codigo in ids):
-        for i in range(0, len(inventario)):
-            if(inventario[i]["codigo"] == codigo):
-                print()
-                print("Producto encontrado: ")
-                print("Nombre: ", inventario[i]["nombre"])
-                print("Precio: ", inventario[i]["precio"])
-                print("Cantidad: ", inventario[i]["cantidad"])
-                print("Numero de ventas: ", inventario[i]["nVentas"])
+    criterio = input("¿Desea buscar por [1] Código o [2] Nombre? Ingrese 1 o 2: ").strip()
+    
+    if criterio == "1":  # Buscar por código
+        codigo = inputNumero("Ingrese el código del producto: ")
+        encontrado = False
+        for producto in inventario:
+            if producto["codigo"] == codigo:
+                print("\nProducto encontrado:")
+                print(f"Nombre: {producto['nombre']}")
+                print(f"Código: {producto['codigo']}")
+                print(f"Precio: {producto['precio']}")
+                print(f"Cantidad: {producto['cantidad']}")
+                print(f"Número de ventas: {producto['nVentas']}")
                 print("----------------")
-                print()
+                encontrado = True
+                break
+        if not encontrado:
+            print("No se encontró un producto con ese código.")
+    
+    elif criterio == "2":  # Buscar por nombre
+        nombre = input("Ingrese el nombre del producto: ").strip().upper()
+        encontrado = False
+        for producto in inventario:
+            if producto["nombre"] == nombre:
+                print("\nProducto encontrado:")
+                print(f"Nombre: {producto['nombre']}")
+                print(f"Código: {producto['codigo']}")
+                print(f"Precio: {producto['precio']}")
+                print(f"Cantidad: {producto['cantidad']}")
+                print(f"Número de ventas: {producto['nVentas']}")
+                print("----------------")
+                encontrado = True
+                break
+        if not encontrado:
+            print("No se encontró un producto con ese nombre.")
+    
     else:
-        print("No hay un producto con ese codigo asociado")
-
+        print("Opción no válida. Por favor, ingrese 1 o 2.")
+    
+    
 def listarProductos():
     print()
-    print("***  Listado de Productos  ***")
-    print()
-    for i in range(0, len(inventario)):
-        print("Producto N°", i+1)
-        print()
-        print("Nombre: ", inventario[i]["nombre"])
-        print("Codigo: ", inventario[i]["codigo"])
-        print("Precio: ", inventario[i]["precio"])
-        print("Cantidad: ", inventario[i]["cantidad"])
-        print("Numero de ventas: ", inventario[i]["nVentas"])
-        print("----------------")
-        print()
-
+    if len(inventario) == 0:  # Verifica si el inventario está vacío
+       print("No hay productos registrados en el inventario.")
+       print("***  Listado de Productos  ***")
+       print()
+    for i, producto in enumerate(inventario, start=1):  # Enumerar productos de manera más clara
+            print(f"Producto N° {i}")
+            print(f"Nombre: {producto['nombre']}")
+            print(f"Código: {producto['codigo']}")
+            print(f"Precio: {producto['precio']}")
+            print(f"Cantidad: {producto['cantidad']}")
+            print(f"Número de ventas: {producto['nVentas']}")
+            print("----------------\n")
+            input("Presiona Enter para continuar...")   
 def controlStock():
     print()
     print("***  Control de stock de Productos  ***")
     print("----------------")
+    productosCriticos = [] 
+     # Identificar productos con stock crítico
+    for producto in inventario:
+        if int(producto["cantidad"]) <= stockMinimo:
+            productosCriticos.append(producto)
+# Mostrar resultados
+    if productosCriticos:
+        print("Productos con stock crítico o bajo:")
+        contador = 0
+        for producto in productosCriticos:
+            print(f"Nombre: {producto['nombre']}")
+            print(f"Código: {producto['codigo']}")
+            print(f"Cantidad: {producto['cantidad']}")
+            contador = contador+1
+            print("----------------")
+        print(f"Total de productos con stock critico: {contador}")
+    else:
+        print("Todos los productos tienen niveles de stock adecuados.")
+        print("----------------")
 
 def reportes():
-    print()
-    print("***  Reportes  ***")
-    print("Total de productos: ", len(inventario))
-    contador = 0
-    for i in range(0, len(inventario)):
-        if int(inventario[i]["cantidad"]) <= stockMinimo:
-            print("producto "+inventario[i]["nombre"]+" tiene stock de "+inventario[i]["cantidad"] )
-            contador = contador+1
-    print("Productos con stock menor o igual a "+stockMinimo+": "+contador)
+    print("\n***  Reportes de Inventario  ***")
+    if len(inventario) == 0:  # Verifica si el inventario está vacío
+       print("No hay productos registrados en el inventario.")
+    else:
+        print(f"\nTotal de productos registrados: {len(inventario)}\n")
+        
+        print("Detalle de productos y su stock:")
+        print("-" * 40)
+        for i, producto in enumerate(inventario):
+            print(f"Producto N° {i + 1}")
+            print(f"Nombre: {producto['nombre']}")
+            print(f"Código: {producto['codigo']}")
+            print(f"Cantidad en stock: {producto['cantidad']}")
+            print("-" * 40)
+
+        controlStock()
+        print()
+        print("***Top 3 Productos Mas vendidos ***")
+        topInventario = sorted(inventario, key=lambda producto: producto['nVentas'], reverse=True)[:3]
+        for i in range(0, len(topInventario)):
+            print(f"Nombre: {topInventario[i]['nombre']}")
+            print(f"Código: {topInventario[i]['codigo']}")
+            print(f"Cantidad de ventas: {topInventario[i]['nVentas']}")
+            print("----------------\n")
+
+
+    
+    print("----------------")
+    print("Fin del reporte.")
+    
     
     print("----------------")
 
@@ -270,10 +364,10 @@ while True:
 
 
     menu()
-    opcion = int(input("Elija una opción: "))
+    opcion = int(inputNumero("Elija una opción: "))
 
     if(opcion == 0):
-        print("Hasta pronto.")
+        print("Fin de sesión, hasta pronto.")
         break
     elif(opcion == 1):
         agregarProducto()
